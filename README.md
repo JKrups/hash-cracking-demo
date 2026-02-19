@@ -97,6 +97,22 @@ This prints one comparison to the terminal (random password, no server).
 - **Diagram**: You can include a screenshot of the web demo (before/after clicking “Run comparison”) and/or a flowchart: Generate password → Hash with MD5 and SHA-256 → Dictionary attack on each → Compare times.
 - **References**: Cite NIST guidelines on password hashing, and any sources you use for the introduction (e.g. OWASP, NIST SP 800-132).
 
+## Sharing this repo on GitHub
+
+To put this project on your GitHub so teammates can clone it:
+
+1. **Create a new repository** on GitHub: go to [github.com/new](https://github.com/new).
+2. Set **Repository name** to `hash-cracking-demo`, set visibility to **Public**, and leave "Add a README" unchecked (this project already has one).
+3. Click **Create repository**.
+4. In this project folder, push the existing code:
+
+   ```bash
+   cd hash-cracking-demo
+   git push -u origin main
+   ```
+
+Share the repo link: **https://github.com/JKrups/hash-cracking-demo**
+
 ## License
 
 For educational use as part of CSI 3480.
