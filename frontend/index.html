@@ -192,8 +192,9 @@
         </div>
       </div>
       <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">
-        Conclusion: MD5 is much faster to compute, so the same dictionary attack finds the password sooner.
-        SHA-256 is slower per hash, making brute-force and dictionary attacks more expensive. For passwords, use a dedicated slow hash (e.g. bcrypt, Argon2) with salt.
+        Conclusion: MD5 and SHA-256 are both fast hashes, so dictionary and brute-force attacks can run quickly.
+        The exact speed difference can vary by machine, but the key security lesson is that fast hashes are a poor choice for password storage.
+        For passwords, use a dedicated slow, salted hash (e.g. bcrypt, Argon2, PBKDF2).
       </p>
     </div>
   </div>

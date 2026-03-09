@@ -11,7 +11,7 @@ This project demonstrates why storing passwords with fast, legacy hashes (like M
 3. **Runs a dictionary attack** against each hash (same wordlist, same password in the list).
 4. **Reports** how long each attack took and how many hashes per second were tried.
 
-MD5 is much faster to compute, so the same attack cracks the MD5 hash in less time. SHA-256 is slower per hash, making brute-force and dictionary attacks more expensive—though for real password storage you should use a **dedicated password hash** (e.g. bcrypt, Argon2) with salt, not raw SHA-256.
+ MD5 and SHA-256 are both **fast** hashes, so dictionary and brute-force attacks can try large numbers of guesses per second. On many systems MD5 will be faster than SHA-256, but the exact difference can vary by machine and crypto library implementation—the key takeaway is the same: **fast hashes are a poor choice for password storage**. For real password storage you should use a **dedicated password hash** (e.g. bcrypt, Argon2, PBKDF2) with a unique salt per password—not raw SHA-256.
 
 ## Project layout
 

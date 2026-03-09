@@ -116,4 +116,5 @@ if __name__ == "__main__":
     print(f"\nDictionary size: {result['dict_size']} candidates")
     print(f"\nMD5 crack:    {result['md5']['time_seconds']} s  ({result['md5']['hashes_per_second']} hashes/s)")
     print(f"SHA-256 crack: {result['sha256']['time_seconds']} s  ({result['sha256']['hashes_per_second']} hashes/s)")
-    print(f"\nConclusion: SHA-256 is slower per hash, so the same attack takes longer.")
+    print("\nConclusion: MD5 and SHA-256 are both fast hashes, so guessing attacks can run quickly.")
+    print("For password storage, prefer slow, salted password hashing (bcrypt/Argon2/PBKDF2), not raw SHA-256.")
