@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Password Hashing Demo</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #000000;               /* black background */
+      color: #e0e0e0;                    /* light gray text for readability */
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    /* Top half - input area */
+    .input-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: #111111;               /* slightly lighter black for contrast */
+      border-bottom: 1px solid #333;
+      padding: 40px 20px;
+      min-height: 40vh;
+    }
+
+    .input-section h1 {
+      margin: 0 0 1.5rem 0;
+      font-size: 2rem;
+      color: #ffffff;
+      text-align: center;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2rem;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    #userInput {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 1.1rem;
+      background: #1a1a1a;
+      color: #ffffff;
+      border: 2px solid #444;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    #userInput:focus {
+      outline: none;
+      border-color: #4caf50;             /* green focus ring */
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.25);
+    }
+
+    button {
+      padding: 14px 40px;
+      font-size: 1.1rem;
+      background: #4caf50;               /* nice green */
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      background: #45a049;               /* darker green on hover */
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    /* Bottom half - results */
+    .results-section {
+      flex: 1;
+      display: flex;
+      min-height: 40vh;
+    }
+
+    .result-box {
+      flex: 1;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      border-right: 1px solid #333;
+      background: #0d0d0d;
+    }
+
+    .result-box:last-child {
+      border-right: none;
+    }
+
+    .result-box h2 {
+      margin: 0;
+      font-size: 1.4rem;
+      color: #4caf50;                    /* green titles for accent */
+    }
+
+    .result-value {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1.05rem;
+      color: #d0ffd0;                    /* light greenish for hashes */
+      background: #111111;
+      padding: 14px 16px;
+      border-radius: 6px;
+      min-height: 100px;
+      word-break: break-all;
+      white-space: pre-wrap;
+      border: 1px solid #222;
+    }
+
+    @media (max-width: 768px) {
+      .results-section {
+        flex-direction: column;
+      }
+      .result-box {
+        border-right: none;
+        border-bottom: 1px solid #333;
+      }
+      .result-box:last-child {
+        border-bottom: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Top half -->
+    <section class="input-section">
+      <h1>Password Hashing Demo</h1>
+      
+      <div class="input-group">
+        <input 
+          id="userInput" 
+          type="text" 
+          placeholder="Enter password and press Enter or click Submit"
+          autocomplete="new-password"
+        >
+        <button onclick="sendData()">Submit</button>
+      </div>
+    </section>
+
+    <!-- Bottom half - 3 columns -->
+    <section class="results-section">
+      <div class="result-box">
+        <h2>MD5</h2>
+        <div id="md5" class="result-value">—</div>
+      </div>
+      
+      <div class="result-box">
+        <h2>SHA-256</h2>
+        <div id="sha_256" class="result-value">—</div>
+      </div>
+      
+      <div class="result-box">
+        <h2>bcrypt</h2>
+        <div id="bcrypt" class="result-value">—</div>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="{{ url_for('static', filename='main_page.js') }}"></script>
+
+</body>
+</html>
