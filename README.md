@@ -1,123 +1,92 @@
 # The Vulnerability of Plaintext and Fast Hashing
 
-**CSI 3480 Security and Privacy in Computing — Winter 2026**
+CSI 3480 Security and Privacy in Computing - Winter 2026
 
-This project demonstrates why storing passwords with fast, legacy hashes (like MD5) is insecure, and compares cracking time to a modern hash (SHA-256) using a simple dictionary attack.
+This is a small demo app that shows why fast hashes are risky for password storage.
+You can enter a password (or leave it blank to auto-generate one), then compare:
 
-## What it does
+- MD5
+- SHA-256
+- bcrypt
 
-1. **Uses** a password you enter, or **generates** a random 12-character password (letters + digits) if you leave the field empty.
-2. **Hashes** it with both MD5 and SHA-256.
-3. **Runs a dictionary attack** against each hash (same wordlist, same password in the list).
-4. **Reports** how long each attack took and how many hashes per second were tried.
+The app runs dictionary-style checks and shows timing/rate so you can see how fast hashes differ from a slower password hash.
 
- MD5 and SHA-256 are both **fast** hashes, so dictionary and brute-force attacks can try large numbers of guesses per second. On many systems MD5 will be faster than SHA-256, but the exact difference can vary by machine and crypto library implementation—the key takeaway is the same: **fast hashes are a poor choice for password storage**. For real password storage you should use a **dedicated password hash** (e.g. bcrypt, Argon2, PBKDF2) with a unique salt per password—not raw SHA-256.
+## Project structure
 
-## Project layout
+- `backend/app.py` - Flask server + API endpoints
+- `backend/cracker.py` - hash and attack logic
+- `frontend/index.html` - web UI
+- `docs/REPORT.md` - full project report
+- `requirements.txt` - dependencies
 
-- `backend/cracker.py` — Core logic: password generation, hashing, dictionary attack.
-- `backend/app.py` — Flask API that runs the comparison and serves the frontend.
-- `frontend/index.html` — Simple web UI to run the demo and view results.
-- `docs/REPORT.md` — Detailed project report (introduction, methodology, group work, challenges, references).
-- `requirements.txt` — Python dependencies.
+## Quick setup (copy/paste)
 
-## How to test the application (for teammates)
-
-### Prerequisites
-
-- **Python 3.8+** installed on your machine.
-
-### 1. Clone and open the project
+From the project folder:
 
 ```bash
-cd hash-cracking-demo-ProjectV1.0
-```
-
-(If you’re in a different repo path, use that folder instead.)
-
-### 2. Create a virtual environment and install dependencies
-
-```bash
-python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 3. Start the backend server
+## Run the web demo
 
 ```bash
-cd backend
-python app.py
+python backend/app.py
 ```
 
-You should see something like:
+Open:
 
-- `Running on http://127.0.0.1:5000`
+- `http://localhost:5000`
 
-**If port 5000 is already in use** (e.g. on macOS, AirPlay Receiver uses 5000):
-
-- **macOS:** System Settings → General → AirDrop & Handoff → set **AirPlay Receiver** to **Off**, or
-- Run on a different port:  
-  `python -c "from app import app; app.run(host='0.0.0.0', port=5001, debug=True)"`  
-  then use **http://localhost:5001** in the steps below.
-
-### 4. Open the app in your browser
-
-- Go to **http://localhost:5000** (or **http://localhost:5001** if you used the alternate port).
-
-### 5. Run the demo
-
-- **With your own password:** Type a password in the **Password** field, then click **Run comparison**.
-- **With a random password:** Leave the **Password** field empty and click **Run comparison**.
-
-You’ll see the password (yours or generated), the MD5 and SHA-256 hashes, dictionary size, and the time/hashes-per-second for cracking each hash.
-
-### 6. Stop the application
-
-- In the terminal where the server is running, press **Ctrl+C**.
-
----
-
-### Optional: run from command line only (no web UI)
-
-From the project root:
+If port 5000 is busy on your machine, run on 5001:
 
 ```bash
-cd backend
-python cracker.py
+python -c "from backend.app import app; app.run(host='0.0.0.0', port=5001, debug=True)"
 ```
 
-This prints one comparison to the terminal (random password, no server).
+Then open:
 
-## Configuration
+- `http://localhost:5001`
 
-- **Dictionary size**: The number of candidate passwords in the attack. Default is 20,000. Set env var `DICT_SIZE` to change it (e.g. `DICT_SIZE=10000 python app.py`). Larger lists make the difference between MD5 and SHA-256 more noticeable but take longer.
-- **Dictionary source**: If `dictionary_12.txt` exists in `backend/` or the project root, it is used as seed candidates. If not present, the app still works by generating candidates programmatically.
-- **bcrypt cost factor**: `BCRYPT_ROUNDS` sets the bcrypt work factor (default **6**). Higher values (e.g. 12) are closer to production defaults but make each `checkpw` much slower. Minimum is **4**.
-- **bcrypt candidate cap**: `BCRYPT_ATTACK_CAP` limits how many dictionary candidates bcrypt tries (default **1200**). The real password is always included; MD5/SHA-256 still use the full `DICT_SIZE` list. Set `BCRYPT_ATTACK_CAP=0` or `full` to run bcrypt against the **entire** candidate list (can take a long time).
+## How to use the demo
 
-## For your report
+1. Open the page.
+2. Type a password, or leave the field blank for an auto-generated password.
+3. Click **Submit**.
+4. Read the three result panels (MD5, SHA-256, bcrypt).
 
-- **Methodology**: The script builds a random wordlist that includes the generated 12-char password, then runs the same list against the MD5 and SHA-256 hashes and measures elapsed time and hashes per second.
-- **Diagram**: You can include a screenshot of the web demo (before/after clicking “Run comparison”) and/or a flowchart: Generate password → Hash with MD5 and SHA-256 → Dictionary attack on each → Compare times.
-- **References**: Cite NIST guidelines on password hashing, and any sources you use for the introduction (e.g. OWASP, NIST SP 800-132).
+You will see:
 
-## Sharing this repo on GitHub
+- the hash output for each algorithm
+- cracking/check timing
+- rate (hashes/checks per second)
 
-To put this project on your GitHub so teammates can clone it:
+## Optional CLI run
 
-1. **Create a new repository** on GitHub: go to [github.com/new](https://github.com/new).
-2. Set **Repository name** to `hash-cracking-demo`, set visibility to **Public**, and leave "Add a README" unchecked (this project already has one).
-3. Click **Create repository**.
-4. In this project folder, push the existing code:
+```bash
+python backend/cracker.py
+```
 
-   ```bash
-   cd hash-cracking-demo
-   git push -u origin main
-   ```
+## Useful settings (optional)
 
-Share the repo link: **https://github.com/JKrups/hash-cracking-demo**
+- `DICT_SIZE` (default `20000`)  
+  Number of candidates for MD5/SHA-256 comparisons.
 
-## License
+- `BCRYPT_ROUNDS` (default `6`)  
+  bcrypt cost factor. Higher = slower, more realistic.
 
-For educational use as part of CSI 3480.
+- `BCRYPT_ATTACK_CAP` (default `1200`)  
+  Limit for bcrypt candidate checks so demo stays responsive.
+  Use `0` or `full` to test bcrypt against the full list (can be very slow).
+
+Example:
+
+```bash
+DICT_SIZE=30000 BCRYPT_ROUNDS=8 BCRYPT_ATTACK_CAP=1500 python backend/app.py
+```
+
+## Notes
+
+- This is an educational demo, not a production auth system.
+- Main takeaway: fast hashes (MD5/SHA-256) are not ideal for password storage; use bcrypt/Argon2/PBKDF2 with salt.
