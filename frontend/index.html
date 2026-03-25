@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MD5 vs SHA-256 vs bcrypt — Hash Demo | CSI 3480</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --danger: #f85149;
+      --success: #3fb950;
+      --bcrypt: #a371f7;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0 0 1rem 0;
+      color: var(--text-muted);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 0.75rem 1.25rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: var(--accent);
+      color: var(--bg);
+      transition: filter 0.15s;
+    }
+    .btn:hover { filter: brightness(1.1); }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      filter: none;
+    }
+    .results { display: none; }
+    .results.visible { display: block; }
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      word-break: break-all;
+    }
+    .hash-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: baseline;
+      margin-bottom: 0.75rem;
+    }
+    .hash-row label { color: var(--text-muted); min-width: 80px; }
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    @media (max-width: 900px) { .comparison { grid-template-columns: 1fr; } }
+    .algo-box {
+      border-radius: 8px;
+      padding: 1rem;
+      border: 1px solid var(--border);
+    }
+    .algo-box.md5 { border-color: var(--danger); background: rgba(248,81,73,0.06); }
+    .algo-box.sha256 { border-color: var(--success); background: rgba(63,185,80,0.06); }
+    .algo-box.bcrypt { border-color: var(--bcrypt); background: rgba(163,113,247,0.08); }
+    .algo-box h3 { margin: 0 0 0.5rem 0; font-size: 1rem; }
+    .algo-box.md5 h3 { color: var(--danger); }
+    .algo-box.sha256 h3 { color: var(--success); }
+    .algo-box.bcrypt h3 { color: var(--bcrypt); }
+    .stat { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; }
+    .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid transparent;
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error { color: var(--danger); margin-top: 0.5rem; }
+    .input-wrap { margin-bottom: 1rem; }
+    .input-wrap label { display: block; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.35rem; }
+    .input-wrap input {
+      width: 100%;
+      max-width: 320px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .input-wrap input::placeholder { color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>The Vulnerability of Plaintext and Fast Hashing</h1>
+    <p class="subtitle">CSI 3480 Security and Privacy in Computing — Winter 2026</p>
+
+    <div class="card">
+      <h2>Demo</h2>
+      <p style="margin: 0 0 1rem 0; color: var(--text-muted); font-size: 0.95rem;">
+        Enter a password to test, or leave empty to generate one randomly. It will be hashed with MD5, SHA-256, and bcrypt,
+        then dictionary-style attacks run so you can compare fast hashes and a slow password hash.
+      </p>
+      <div class="input-wrap">
+        <label for="passwordInput">Password</label>
+        <input type="text" id="passwordInput" placeholder="Leave empty to generate randomly" autocomplete="off" />
+      </div>
+      <button type="button" class="btn" id="runBtn">
+        <span id="btnText">Run comparison</span>
+        <span id="btnSpinner" class="spinner" style="display: none;"></span>
+      </button>
+      <p id="error" class="error" style="display: none;"></p>
+    </div>
+
+    <div class="card results" id="results">
+      <h2>Results</h2>
+      <div class="hash-row">
+        <label>Password</label>
+        <span class="mono" id="password"></span>
+      </div>
+      <div class="hash-row">
+        <label>MD5</label>
+        <span class="mono" id="md5Hash"></span>
+      </div>
+      <div class="hash-row">
+        <label>SHA-256</label>
+        <span class="mono" id="sha256Hash"></span>
+      </div>
+      <div class="hash-row">
+        <label>bcrypt</label>
+        <span class="mono" id="bcryptHash"></span>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0.5rem 0 0 0;">
+        Dictionary size: <span id="dictSize"></span> candidates (MD5/SHA-256) · bcrypt tries: <span id="bcryptWordlistSize">—</span> · bcrypt cost factor: <span id="bcryptRounds">—</span>
+      </p>
+      <div class="comparison">
+        <div class="algo-box md5">
+          <h3>MD5 (legacy, fast)</h3>
+          <div class="stat" id="md5Time">—</div>
+          <div class="stat-label">Time to crack</div>
+          <div class="stat" id="md5Rate">—</div>
+          <div class="stat-label">Hashes per second</div>
+        </div>
+        <div class="algo-box sha256">
+          <h3>SHA-256 (fast digest)</h3>
+          <div class="stat" id="sha256Time">—</div>
+          <div class="stat-label">Time to crack</div>
+          <div class="stat" id="sha256Rate">—</div>
+          <div class="stat-label">Hashes per second</div>
+        </div>
+        <div class="algo-box bcrypt">
+          <h3>bcrypt (password hash)</h3>
+          <div class="stat" id="bcryptTime">—</div>
+          <div class="stat-label">Time to crack</div>
+          <div class="stat" id="bcryptRate">—</div>
+          <div class="stat-label">checkpw calls / second</div>
+        </div>
+      </div>
+      <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">
+        Conclusion: MD5 and SHA-256 are fast hashes, so offline guessing can try many candidates per second.
+        bcrypt is intentionally slow (cost factor); use it (or Argon2/PBKDF2) for password storage, not raw MD5/SHA-256.
+      </p>
+    </div>
+  </div>
+  <script>
+    const API_BASE = location.origin.startsWith('http') ? '' : 'http://localhost:5000';
+    const runBtn = document.getElementById('runBtn');
+    const btnText = document.getElementById('btnText');
+    const btnSpinner = document.getElementById('btnSpinner');
+    const errorEl = document.getElementById('error');
+    const resultsEl = document.getElementById('results');
+    const passwordInput = document.getElementById('passwordInput');
+
+    function setLoading(loading) {
+      runBtn.disabled = loading;
+      btnText.textContent = loading ? 'Running attack…' : 'Run comparison';
+      btnSpinner.style.display = loading ? 'inline-block' : 'none';
+      errorEl.style.display = 'none';
+    }
+
+    function showError(msg) {
+      errorEl.textContent = msg;
+      errorEl.style.display = 'block';
+    }
+
+    function showResults(data) {
+      resultsEl.classList.add('visible');
+      document.getElementById('password').textContent = data.password;
+      document.getElementById('md5Hash').textContent = data.md5_hash;
+      document.getElementById('sha256Hash').textContent = data.sha256_hash;
+      document.getElementById('bcryptHash').textContent = data.bcrypt_hash || '—';
+      document.getElementById('dictSize').textContent = data.dict_size.toLocaleString();
+      document.getElementById('bcryptWordlistSize').textContent =
+        data.bcrypt_wordlist_size != null ? data.bcrypt_wordlist_size.toLocaleString() : '—';
+      document.getElementById('bcryptRounds').textContent =
+        data.bcrypt_rounds != null ? String(data.bcrypt_rounds) : '—';
+      document.getElementById('md5Time').textContent = data.md5.time_seconds + ' s';
+      document.getElementById('md5Rate').textContent = data.md5.hashes_per_second.toLocaleString();
+      document.getElementById('sha256Time').textContent = data.sha256.time_seconds + ' s';
+      document.getElementById('sha256Rate').textContent = data.sha256.hashes_per_second.toLocaleString();
+      document.getElementById('bcryptTime').textContent = data.bcrypt ? data.bcrypt.time_seconds + ' s' : '—';
+      document.getElementById('bcryptRate').textContent = data.bcrypt
+        ? data.bcrypt.hashes_per_second.toLocaleString()
+        : '—';
+    }
+
+    runBtn.addEventListener('click', async () => {
+      setLoading(true);
+      try {
+        const password = passwordInput.value.trim();
+        const url = API_BASE + '/api/compare';
+        const options = password
+          ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password }) }
+          : {};
+        const res = await fetch(url, options);
+        if (!res.ok) throw new Error('Request failed: ' + res.status);
+        const data = await res.json();
+        showResults(data);
+      } catch (e) {
+        showError(e.message || 'Could not reach the server. Is the backend running on port 5000?');
+      } finally {
+        setLoading(false);
+      }
+    });
+  </script>
+</body>
+</html>
