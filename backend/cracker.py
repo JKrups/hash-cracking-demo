@@ -190,9 +190,6 @@ def run_comparison(
         password = generate_password(12)
     else:
         password = password.strip()
-        # Keep demo behavior simple and aligned with assignment requirement.
-        if len(password) < 12:
-            password = generate_password(12)
     wordlist = build_dictionary_with_password(password, size=dict_size)
 
     # Shuffle so password position isn't predictable
