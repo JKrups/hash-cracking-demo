@@ -1,7 +1,6 @@
 """
 Flask API for MD5 vs SHA-256 dictionary attack demo.
 Serves the comparison endpoint and static frontend.
-CSI 3480 Security and Privacy in Computing - Winter 2026
 """
 
 import os
