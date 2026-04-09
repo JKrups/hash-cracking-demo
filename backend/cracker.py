@@ -2,7 +2,6 @@
 Password hashing and dictionary attack comparison: MD5 vs SHA-256 vs bcrypt.
 Demonstrates why fast hashes (MD5) are vulnerable to cracking, and why bcrypt
 is intentionally slow for password storage.
-CSI 3480 Security and Privacy in Computing - Winter 2026
 """
 
 import hashlib
