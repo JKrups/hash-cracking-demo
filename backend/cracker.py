@@ -40,7 +40,6 @@ def load_dictionary_file(filename: str = "dictionary_12.txt") -> list[str]:
 
 def generate_dictionary_candidates() -> list[str]:
     """
-    Adapted from teammates' dictonary_genrator.py.
     Produces 12-char style candidates.
     """
     words_8 = [
@@ -107,7 +106,7 @@ def hash_sha256(text: str) -> str:
 
 def hash_bcrypt(password: str) -> bytes:
     """
-    Teammate-style bcrypt hash from provided password.py:
+    bcrypt hash:
     bcrypt.hashpw(password_bytes, bcrypt.gensalt(...))
     """
     rounds = int(os.environ.get("BCRYPT_ROUNDS", "6"))
@@ -161,7 +160,7 @@ def dictionary_attack_bcrypt(
     wordlist: list[str],
 ) -> tuple[Optional[str], float, int]:
     """
-    Teammate-style bcrypt dictionary attack from provided password.py:
+    bcrypt dictionary attack:
     for each candidate, bcrypt.checkpw(candidate_bytes, password_bcrypt).
     Stops at first match (realistic for guessing attacks).
     """
