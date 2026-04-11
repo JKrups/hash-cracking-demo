@@ -206,7 +206,7 @@ def run_comparison(
     sha256_result, sha256_time, sha256_attempts = dictionary_attack(
         sha256_hash, wordlist, hash_sha256
     )
-    # Crack bcrypt (teammate loop: checkpw per candidate until match)
+    # Crack bcrypt (loop: checkpw per candidate until match)
     bcrypt_result, bcrypt_time, bcrypt_attempts = dictionary_attack_bcrypt(
         bcrypt_hash_bytes, bcrypt_wordlist
     )
