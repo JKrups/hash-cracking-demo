@@ -23,9 +23,14 @@ The app runs dictionary-style checks and shows timing/rate so you can see how fa
 
 From the project folder:
 
-```bash
+```bash (Mac OS)
 python3 -m venv .venv
 source .venv/bin/activate
+pip install -r requirements.txt
+```
+```cmd (Windows OS)
+python -m venv .venv
+.venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
